@@ -3,3 +3,4 @@ venv/
 __pycache__/
 *.pyc
 client_secret_*.apps.googleusercontent.com.json
+chroma_db/
