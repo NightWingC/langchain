@@ -1,5 +1,5 @@
 from langchain_community.document_loaders import PyPDFLoader
-from mll.mll import mll
+from section_3.mll.mll import mll
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Cargar el documento PDF

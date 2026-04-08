@@ -27,7 +27,7 @@ vectorstores = Chroma.from_documents(
     collection_name="contratos",
 )
 
-consulta = "Cdonde se encuentra el local de contrato en el que participa Maria Jimenez Campos"
+consulta = "Donde se encuentra el local de contrato en el que participa Maria Jimenez Campos"
 
 resultados = vectorstores.similarity_search(consulta, k=2)
 print("Top 3 resultados para la consulta: \n")
