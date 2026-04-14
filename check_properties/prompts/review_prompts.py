@@ -41,12 +41,7 @@ ANALISIS_PROMPT = HumanMessagePromptTemplate.from_template(
 3. Revisa las características y amenidades declaradas
 4. Identifica puntos fuertes del inmueble para destacar en la publicación
 5. Señala deficiencias, datos faltantes o inconsistencias que deben corregirse
-6. Asigna un puntaje de aptitud para publicación (0-100) considerando:
-   - Completitud de la información básica (30% del peso)
-   - Calidad de la descripción y presentación (25% del peso)
-   - Coherencia y consistencia de los datos (25% del peso)
-   - Situación legal y documentación (20% del peso)
-7. Emite un veredicto claro: APROBADO para publicar o RECHAZADO con los motivos correspondientes
+6. Emite un veredicto claro: APROBADO para publicar o RECHAZADO con los motivos correspondientes
 
 Sé preciso, objetivo y constructivo en tu análisis."""
 )

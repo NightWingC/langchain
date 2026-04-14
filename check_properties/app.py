@@ -1,10 +1,10 @@
-import json
-import os
-from urllib.error import HTTPError, URLError
+from typing import Any
 
 from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
+from models.review_model import ReviewPropertyResponse
 
-from services.reviewer import obtener_propiedades_desde_endpoint, revisar_propiedad, aprobar_rechazar_propiedad
+from services.reviewer import construir_mensaje_revision, revisar_propiedad
 
 
 REQUIRED_FIELDS = [
@@ -33,49 +33,45 @@ REQUIRED_FIELDS = [
 ]
 
 
-def normalizar_propiedad(propiedad: dict) -> dict:
+def normalizar_propiedad(propiedad: dict[str, Any]) -> dict[str, Any]:
 	return {field: propiedad.get(field) for field in REQUIRED_FIELDS}
 
 
-def main() -> None:
-	load_dotenv()
+load_dotenv()
 
-	endpoint_url = os.getenv("ENDPOINT_URL")
-	endpoint_token = os.getenv("ENDPOINT_TOKEN") or os.getenv("TOKEN_SECRET")
+app = FastAPI(
+	title="Check Properties API",
+	description="Servicio para evaluar propiedades con LLM y devolver status + mensaje.",
+	version="1.0.0",
+)
 
-	if not endpoint_url:
-		raise EnvironmentError("ENDPOINT_URL no está definida en el .env")
 
+@app.get("/health")
+def health() -> dict[str, str]:
+	return {"status": "ok"}
+
+
+@app.post(
+	"/review-property",
+	responses={500: {"description": "Error interno al evaluar propiedad"}},
+)
+def review_property(
+	payload: dict[str, Any],
+	tipo_operacion: str = "venta",
+) -> ReviewPropertyResponse:
 	try:
-		propiedades = obtener_propiedades_desde_endpoint(
-			endpoint_url=endpoint_url,
-			token=endpoint_token,
+		propiedad_normalizada = normalizar_propiedad(payload)
+		resultado = revisar_propiedad(propiedad_normalizada, tipo_operacion)
+		mensaje = construir_mensaje_revision(resultado)
+		return ReviewPropertyResponse(
+			status=resultado.veredicto_publicacion,
+			mensaje=mensaje,
 		)
-	except HTTPError as error:
-		error_detail = error.read().decode("utf-8", errors="replace")
-		raise SystemExit(
-			f"Error HTTP {error.code}: {error.reason}\n"
-			f"Detalle: {error_detail[:500]}"
-		) from error
-	except URLError as error:
-		raise SystemExit(
-			"No se pudo conectar al endpoint. "
-			"Verifica URL, token y que el servicio este activo. "
-			f"Detalle: {error.reason}"
-		) from error
-	except ValueError as error:
-		raise SystemExit(f"Respuesta inesperada del endpoint: {error}") from error
-
-	propiedades_normalizadas = [normalizar_propiedad(p) for p in propiedades]
-
-	for propiedad in propiedades_normalizadas[:3]:
-		# print(f"propiedad: {propiedad}")
-		print(f"\n--- Revisando: {propiedad.get('title', propiedad.get('uuid', 'sin título'))} ---")
-		resultado = revisar_propiedad(propiedad)
-		print(json.dumps(resultado.model_dump(), ensure_ascii=False, indent=2))
-		# aprobar_rechazar_propiedad(resultado.)
-
+	except Exception as error:
+		raise HTTPException(status_code=500, detail=str(error)) from error
 
 
 if __name__ == "__main__":
-	main()
+	import uvicorn
+
+	uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
