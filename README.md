@@ -94,24 +94,8 @@ streamlit run cv_analyzer/app.py
 
 Despues abre la URL local que muestre Streamlit en la terminal.
 
-## Mini guia de aprendizaje sugerida
-
-1. Empieza por section_1 para entender invocacion basica de modelos.
-2. Continua con section_2 para dominar prompts reutilizables y salidas estructuradas.
-3. Cierra con cv_analyzer para ver una arquitectura mas cercana a produccion.
-
 ## Notas importantes
 
 - Si una API key no esta configurada, algunos scripts fallaran al iniciar.
 - El modulo cv_analyzer espera CVs en PDF con texto extraible.
-- section_3 esta vacia intencionalmente para futuras clases.
 
-## Proximas mejoras recomendadas
-
-- Agregar un archivo requirements.txt para instalacion reproducible.
-- Incluir tests basicos para servicios de extraccion y evaluacion.
-- Separar configuracion por entorno (dev, test, prod).
-
-## Licencia
-
-Uso educativo.
