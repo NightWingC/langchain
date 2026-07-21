@@ -1,4 +1,4 @@
-import request
+import requests
 
 class NewsService:
     
@@ -8,13 +8,13 @@ class NewsService:
         
     def get_latests_tech_news(self) -> str:
         params = {
-            "category": "technology",
+            "q": "apple",
             "from": "2026-04-01",
             "sortBy": "popularity",
             "apiKey": self.api_key
         }
         
-        response = request.get(self.base_url, params=params)
+        response = requests.get(self.base_url, params=params)
         data = response.json()
         
         if not data.get("articles"):
